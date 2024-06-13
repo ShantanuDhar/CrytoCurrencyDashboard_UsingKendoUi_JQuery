@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Global Styles */
+        html {
+            font-size: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #fff;
+            color: #333;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-top: 20px;
+            color: #000;
+        }
+
+        /* Layout Styles */
+        #dashboard {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            flex: 0 0 30%;
+            border-right: 2px solid #000;
+            padding-right: 10px;
+        }
+
+        .table-container {
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding-left: 10px;
+        }
+
+        .currency-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .currency-buttons .k-button-group .k-button {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .currency-buttons .k-button-group .k-button.k-state-selected {
+            background-color: #ff4500;
+        }
+
+        /* Chart Styles */
+        .chart-container {
+            margin-top: 20px;
+        }
+
+        #chart {
+            height: 400px;
+        }
+    </style>
+    <title>Crypto Dashboard</title>
+    <link href="https://kendo.cdn.telerik.com/themes/8.0.1/default/default-main.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2024.2.514/js/kendo.all.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Initialize the ButtonGroup for time selection
+            $('#button-group').kendoButtonGroup({
+                select: onTimeSelect,
+                items: [
+                    {text: '6H', selected: true},
+                    {text: '12H'},
+                    {text: '1d'},
+                    {text: '2d'}
+                ]
+            });
+
+            // Initialize the DateTimePicker
+            $('#picker').kendoDateTimePicker({
+                dateInput: true,
+                format: 'MM/dd/yyyy h tt',
+                interval: 60
+            });
+
+            // Initialize the ButtonGroup for base currency selection
+            $('#currency-buttons').kendoButtonGroup({
+                select: onCurrencySelect,
+                items: [
+                    {text: 'BTC'},
+                    {text: 'USDT'},
+                    {text: 'LTC'}
+                ]
+            });
+
+            // Initialize the Grid with hardcoded data
+            $('#grid').kendoGrid({
+                dataSource: {
+                    data: [
+                        { Market: 'BTC-USD', LastPrice: 45000.12345678, Volume: 1200.23456789 },
+                        { Market: 'ETH-USD', LastPrice: 3000.12345678, Volume: 950.23456789 },
+                        { Market: 'LTC-USD', LastPrice: 150.12345678, Volume: 550.23456789 },
+                        { Market: 'XRP-USD', LastPrice: 0.5, Volume: 3200.23456789 },
+                        { Market: 'ADA-USD', LastPrice: 1.2, Volume: 1800.23456789 }
+                    ],
+                    schema: {
+                        model: {
+                            fields: {
+                                Market: { type: "string" },
+                                LastPrice: { type: "number" },
+                                Volume: { type: "number" }
+                            }
+                        }
+                    },
+                    pageSize: 20
+                },
+                height: 550,
+                scrollable: true,
+                sortable: true,
+                filterable: true,
+                pageable: true,
+                columns: [
+                    { field: "Market", title: "Market" },
+                    { field: "LastPrice", title: "LastPrice", format: "{0:n8}" },
+                    { field: "Volume", title: "Volume", format: "{0:n8}" }
+                ]
+            });
+
+            // Initialize the Chart with hardcoded data
+            $('#chart').kendoChart({
+                title: {
+                    text: 'Trading Pair Prices'
+                },
+                series: [{
+                    type: 'line',
+                    name: 'Last Price',
+                    data: [45000.12345678, 3000.12345678, 150.12345678, 0.5, 1.2]
+                }],
+                categoryAxis: {
+                    categories: ['BTC-USD', 'ETH-USD', 'LTC-USD', 'XRP-USD', 'ADA-USD'],
+                    labels: {
+                        rotation: 'auto'
+                    }
+                },
+                valueAxis: {
+                    labels: {
+                        format: '{0}'
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    format: '{0}'
+                }
+            });
+        });
+
+        function onTimeSelect(e) {
+            // Function to handle time selection
+            console.log("Time period selected:", e.sender.selectedIndices);
+        }
+
+        function onCurrencySelect(e) {
+            // Function to handle currency selection
+            console.log("Currency selected:", e.sender.selectedIndices);
+        }
+    </script>
+</head>
+<body>
+    <h1>My Cryptocurrency Dashboard</h1>
+    <div class="currency-buttons" id="currency-buttons"></div>
+    <div id="dashboard">
+        <div class="sidebar">
+            <div class="table-container">
+                <div id="grid"></div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="date-picker">
+                <label for="picker">Date: </label>
+                <input id="picker" />
+            </div>
+            <div class="button-group" id="button-group"></div>
+            <div class="chart-container">
+                <div id="chart"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
